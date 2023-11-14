@@ -1,0 +1,54 @@
+//working if model state is-valid then add user data otherwise using json return data if model is not valid 
+
+if (ModelState.IsValid)
+ {     
+     Db.UserTables.Add(u);
+     int a = Db.SaveChanges();
+     if (a > 0)
+     {
+         SendMailToUser(u.Email, u.ActiveCode.ToString());
+
+         return Json(new { success = true });
+     }
+ }
+ else
+ {
+     //return Json(false);
+     //return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "An error occurred");
+
+     //var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+     //return Json(new { success = false, errors });
+
+     var errors = ModelState.ToDictionary(model => model.Key , model => model.Value.Errors.Select(e => e.ErrorMessage).ToList());
+     return Json(new { success = false, errors });
+ }
+
+
+using jQuery to handle model validation
+
+else {
+    $("#page-loader").hide();
+    $('#signupnotok').show();
+    $('#signupnotok').fadeOut(3000);
+
+    //alert("Signup Failed..");
+    // Error: Display validation errors
+    //var errorMessages = response.errors.join("<br>");
+    //alert('Validation errors: ' + errorMessages);
+    //consloe.log(errorMessages);
+
+    //$.each(response.errors, function (key, value) {
+    //    console.log(key);
+    //    console.log(value);
+    //    $("#" + key).after("<span class='text-danger'>" + value + "</span>");
+    //});
+
+    console.log(response.errors);
+
+    $.each(response.errors, function (key, value) {
+        console.log("key" , key);
+        console.log("value", value);
+        $("#" + key).next(".text-danger").remove();
+        $("#" + key).after("<span class='text-danger'>" + value.join("<br>") + "</span>");
+    });
+}
